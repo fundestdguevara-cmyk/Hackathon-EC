@@ -16,7 +16,7 @@ class LegalSearcher:
         )
 
         candidates = []
-        for m in res.matches:
+        for m in res.matches or []:
             meta = m.metadata or {}
             candidates.append({
                 "id": m.id,
@@ -27,6 +27,9 @@ class LegalSearcher:
                 "source": meta.get("source"),
             })
 
+        if not candidates:
+            return []
+
         pairs = [(user_query, c.get("text", "")) for c in candidates]
         re_scores = self.reranker.predict(pairs)
 
@@ -36,17 +39,23 @@ class LegalSearcher:
         candidates.sort(key=lambda x: x["re_rank_score"], reverse=True)
         return candidates[:top_k]
 
-def compose_answer(results: List[Dict], user_query: str) -> str:
+def compose_answer(results: List[Dict], user_query: str) -> Dict:
     if not results:
-        return "No se encontró información relevante para tu consulta."
+        return {"respuesta": [{
+            "artículo": "—",
+            "título": "Sin coincidencias",
+            "extracto": "No se encontró información relevante."
+        }]}
+
     best = results[0]
-    citation = f"Artículo {best.get('article_number', 'N/A')} — {best.get('source', 'Desconocido')}"
     snippet = best.get("text", "No se encontró texto en la base de datos.")
     if snippet and len(snippet) > 1200:
         snippet = snippet[:1200] + "..."
-    return (
-        f"Según la normativa aplicable:\n\n"
-        f"{snippet}\n\n"
-        f"Cita: {citation}\n"
-        f"(Consulta: \"{user_query}\")"
-    )
+
+    return {"respuesta": [{
+        "artículo": best.get("article_number", "N/A"),
+        "título": best.get("title", ""),
+        "extracto": snippet,
+        "fuente": best.get("source", "Desconocido"),
+        "consulta": user_query
+    }]}

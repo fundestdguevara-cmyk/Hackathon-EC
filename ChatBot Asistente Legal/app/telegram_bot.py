@@ -12,10 +12,10 @@ TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 # 🔹 Diccionario de leyes y endpoints
 LAWS = {
-    "Código del Trabajo": "http://127.0.0.1:8001/ask/Código del Trabajo",
+    "Codigo del Trabajo": "http://127.0.0.1:8001/ask/Codigo del Trabajo",
     "Ley Organica de Educacion Intercultural LOEI": "http://127.0.0.1:8001/ask/Ley Organica de Educacion Intercultural LOEI",
     "Ley Orgánica de Transporte": "http://127.0.0.1:8001/ask/Ley Orgánica de Transporte",
-    "Código Orgánico Integral Penal": "http://127.0.0.1:8001/ask/Código Orgánico Integral Penal"
+    "Codigo Organico Integral Penal": "http://127.0.0.1:8001/ask/Codigo Organico Integral Penal"
 }
 
 # 🔹 Mensaje de bienvenida con botón "Empezar"
@@ -56,18 +56,27 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # 🔹 Pregunta legal
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_question = update.message.text
-    selected_law = context.user_data.get("selected_law", "Código del Trabajo")
+    selected_law = context.user_data.get("selected_law", "Codigo del Trabajo")
     api_url = LAWS[selected_law]
 
     payload = {"question": user_question, "top_k": 3}
     try:
-        response = requests.post(api_url, json=payload)
+        response = requests.post(api_url, json=payload, timeout=10)
         data = response.json()
-        answer = data.get("answer", "No se encontró información relevante.")
-    except Exception as e:
-        answer = f"⚠️ Error al consultar la API: {e}"
+        results = data.get("respuesta", [])
 
-    await update.message.reply_text(answer)
+        if isinstance(results, list) and results:
+            for r in results:
+                art = r.get("artículo", "—")
+                title = r.get("título", "")
+                extract = r.get("extracto", "")
+                msg = f"📑 Artículo {art}\n{title}\n\n{extract}"
+                await update.message.reply_text(msg)
+        else:
+            await update.message.reply_text("⚠️ No se encontró información relevante.")
+
+    except Exception as e:
+        await update.message.reply_text(f"⚠️ Error al consultar la API: {e}")
 
 # 🔹 Lanzamiento del bot
 if __name__ == "__main__":

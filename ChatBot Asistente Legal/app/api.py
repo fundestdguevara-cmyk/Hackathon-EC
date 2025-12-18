@@ -1,35 +1,48 @@
-import os
-from dotenv import load_dotenv
-from fastapi import FastAPI
-from pydantic import BaseModel
-from app.index import init_pinecone, build_embeddings_model
-from app.query import LegalSearcher, compose_answer
-
-load_dotenv()
-
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "legal-assistant")
-
-index = init_pinecone()
-embed_model = build_embeddings_model()
-searcher = LegalSearcher(index, embed_model)
+from fastapi import FastAPI, Request
+from app.index import query_index
+import re
 
 app = FastAPI()
 
-class QuestionRequest(BaseModel):
-    question: str
-    top_k: int = 3
-
 @app.post("/ask/{ley}")
-async def ask_question(ley: str, request: QuestionRequest):
-    try:
-        results = searcher.search(request.question, top_k=request.top_k)
-        results = [r for r in results if r.get("source") == ley]
-        answer = compose_answer(results, request.question)
-    except Exception as e:
-        answer = f"⚠️ Error interno: {str(e)}"
-    return {"answer": answer}
+async def ask_ley(ley: str, request: Request):
+    body = await request.json()
+    question = body.get("question", "")
+    top_k = int(body.get("top_k", 3))
 
-@app.get("/")
-async def root():
-    return {"status": "API Legal Assistant activa 🚀"}
+    results = query_index(question, top_k=top_k, source=ley)
+
+    if not results:
+        return {
+            "respuesta": [{
+                "artículo": "—",
+                "título": "Sin coincidencias",
+                "extracto": "No se encontró información relevante. Intenta mencionar número de artículo o palabras clave."
+            }]
+        }
+
+    # 🔹 Si hay coincidencia exacta por artículo, mostrar solo ese
+    match = re.search(r"art[íi]culo\s*(\d+)", question.lower())
+    if match:
+        articulo = match.group(1)
+        exact = [r for r in results if r.get("article_number") == articulo]
+        if exact:
+            r = exact[0]
+            return {
+                "respuesta": [{
+                    "artículo": r.get("article_number"),
+                    "título": r.get("title"),
+                    "extracto": (r.get("text") or "")[:800] + "..."
+                }]
+            }
+
+    # 🔹 Si no hay coincidencia exacta, mostrar los 3 más relevantes
+    formatted = []
+    for r in results[:3]:
+        formatted.append({
+            "artículo": r.get("article_number"),
+            "título": r.get("title"),
+            "extracto": (r.get("text") or "")[:800] + "..."
+        })
+
+    return {"respuesta": formatted}
