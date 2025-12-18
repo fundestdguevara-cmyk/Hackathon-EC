@@ -1,0 +1,7 @@
+ZooDV_env/
+
+MODELS/deepfaune-vit_large_patch14_dinov2.lvd142m.v4.pt
+
+__pycache__/
+
+.vscode/
