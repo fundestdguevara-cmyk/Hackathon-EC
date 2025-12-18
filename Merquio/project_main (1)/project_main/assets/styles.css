@@ -1,0 +1,48 @@
+/* Estilos personalizados para la aplicación */
+
+/* Mejorar el aspecto de las métricas */
+[data-testid="stMetricValue"] {
+    font-size: 1.5rem !important;
+}
+
+[data-testid="stMetricLabel"] {
+    font-size: 1rem !important;
+}
+
+/* Estilos para los botones */
+.stButton > button {
+    border-radius: 10px;
+    border: 1px solid #4CAF50;
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    background-color: #45a049;
+    border-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Estilos para los tabs */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 10px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    border-radius: 10px 10px 0px 0px;
+    padding: 10px 20px;
+}
+
+/* Mejorar la visualización de dataframes */
+.dataframe {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Estilos para warnings e infos */
+.stAlert {
+    border-radius: 10px;
+}
