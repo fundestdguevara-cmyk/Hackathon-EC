@@ -1,0 +1,87 @@
+# Signify - Dependencias del Sistema
+# =====================================
+
+# Framework principal
+streamlit>=1.28.0
+
+# Visualización y gráficos
+plotly>=5.15.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Procesamiento de datos
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Utilidades de fecha y tiempo
+python-dateutil>=2.8.0
+
+# Procesamiento de texto y NLP
+nltk>=3.8.0
+textblob>=0.17.0
+fuzzywuzzy>=0.18.0
+python-Levenshtein>=0.21.0
+
+# Algoritmos y estructuras de datos
+scipy>=1.10.0
+scikit-learn>=1.3.0
+
+# Audio y síntesis de voz
+gtts>=2.3.0
+pygame>=2.5.0
+sounddevice>=0.4.6
+
+# AI y Machine Learning
+openai-whisper>=20231117
+torch>=2.0.0
+torchaudio>=2.0.0
+opencv-python>=4.8.0
+mediapipe>=0.10.0
+joblib>=1.3.0
+
+# Manejo de archivos y configuración
+pyyaml>=6.0
+toml>=0.10.0
+
+# Logging y debugging
+loguru>=0.7.0
+
+# Testing (opcional para desarrollo)
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Formateo de código (opcional para desarrollo)
+black>=23.0.0
+isort>=5.12.0
+
+# Documentación (opcional)
+sphinx>=7.0.0
+
+# Optimización de rendimiento
+numba>=0.57.0
+
+# Interfaz gráfica alternativa (opcional)
+# PyQt5>=5.15.0  # Descomenta si quieres usar PyQt
+# tkinter  # Incluido en Python estándar
+
+# Utilidades adicionales
+tqdm>=4.65.0  # Barras de progreso
+pillow>=10.0.0  # Procesamiento de imágenes
+requests>=2.31.0  # HTTP requests
+pathlib2>=2.3.7  # Utilidades de rutas
+typing-extensions>=4.7.0  # Extensiones de tipado
+dataclasses>=0.6; python_version < "3.7"  # Dataclasses para Python < 3.7
+
+# Desarrollo y testing
+ipython>=8.14.0  # Shell interactivo mejorado
+jupyter>=1.0.0  # Notebooks (opcional)
+
+# Nota: Algunas dependencias pueden requerir instalación adicional
+# Para instalar todas las dependencias:
+# pip install -r requirements.txt
+
+# Para desarrollo:
+# pip install -r requirements.txt pytest black isort
+
+# Para producción (mínimo):
+# pip install streamlit plotly pandas numpy python-dateutil
