@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+IntiLearnAI_env/
+
+# Env
+.env
+
+# Models & Data
+models/
+data/
+embeddings/
+
+# Desktop runtime backend
+.desktop-backend/
+
+# VSCode
+.vscode/
+
+# Node.js
+node_modules/
+dist/
